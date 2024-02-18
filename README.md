@@ -16,30 +16,40 @@ To run this project, you will need to add the following environment variables to
 
 `POSTGRES_DB`
 
-## Run Locally
+`DATABASE_URL`
+
+## Installation
 
 #### Install [Docker](https://www.docker.com/products/docker-desktop/) in Windows/Mac/Linux before running locally.
 
 Clone the project
 
 ```bash
-  git clone https://github.com/SwethaS03/QuarterlyRepBackend.git
+git clone https://github.com/SwethaS03/QuarterlyRepBackend.git
 ```
 
 Go to the project directory
 
 ```bash
-  cd QuarterlyRepBackend
+cd QuarterlyRepBackend
 ```
 
-Install dependencies
+build the docker image
 
 ```bash
-  npm install
+npm run docker:dev
 ```
 
-Start the server
+run prisma migrations in new terminal
 
 ```bash
-  npm run docker-dev
+npm run prisma:migrate
+```
+
+## Run Locally
+
+To start the server
+
+```bash
+npm run docker:dev
 ```

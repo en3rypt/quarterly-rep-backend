@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import { loginUserService } from "../services/authService";
 
-const loginUserHandler = (req: Request, res: Response) => {
-  const login: boolean = loginUserService();
+const loginUserHandler = async (req: Request, res: Response) => {
+  const login = await loginUserService();
   if (!login) {
     res.status(401).json({ message: "Unauthorized" });
   }
