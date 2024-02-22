@@ -18,6 +18,8 @@ To run this project, you will need to add the following environment variables to
 
 `DATABASE_URL`
 
+`JWT_SECRET`
+
 ## Installation
 
 #### Install [Docker](https://www.docker.com/products/docker-desktop/) in Windows/Mac/Linux before running locally.
@@ -37,13 +39,13 @@ cd QuarterlyRepBackend
 build the docker image
 
 ```bash
-npm run docker:dev
+npm run docker:init
 ```
 
-run prisma migrations in new terminal
+run container
 
 ```bash
-npm run prisma:migrate
+npm run docker:dev
 ```
 
 ## Run Locally

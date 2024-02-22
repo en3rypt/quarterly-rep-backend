@@ -1,6 +1,7 @@
 import { Router } from "express";
-import { loginUserHandler } from "../controllers/authController";
+import { AuthController } from "../controllers/auth.controller";
 
+const authController = new AuthController();
 const authRouter = Router();
 
 /**
@@ -18,6 +19,6 @@ const authRouter = Router();
  *              description: Not implemented
  *
  */
-authRouter.get("/login", loginUserHandler);
+authRouter.post("/login", authController.login);
 
 export default authRouter;

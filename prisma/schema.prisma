@@ -13,7 +13,7 @@ datasource db {
 
 
 model User {
-  username String @id
+  email String @id
   password String
   role     String
   submissions Submission[]
@@ -33,7 +33,7 @@ model Submission {
   objectId String
   status     String
 
-  user   User  @relation(fields: [uid], references: [username])
+  user   User  @relation(fields: [uid], references: [email])
   object Object @relation(fields: [objectId], references: [uuid])
 }
 
