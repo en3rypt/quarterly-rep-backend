@@ -16,8 +16,8 @@ export class AuthService {
       return null;
     }
 
-    const token = generateToken({ userId: user.email, role: user.role });
     const userObject = { email: user.email, role: user.role };
+    const token = generateToken(userObject);
     return { userObject, token };
   }
 }
