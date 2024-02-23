@@ -2,8 +2,9 @@ import { Request, Response, NextFunction } from "express";
 import { verify } from "jsonwebtoken";
 import { PrismaClient } from "@prisma/client";
 import { JwtPayload } from "../interface";
-
+import { UserService } from "../services/user.service";
 const prisma = new PrismaClient();
+const userService = new UserService();
 
 export async function jwtAuthMiddleware(
   req: Request,
@@ -21,9 +22,7 @@ export async function jwtAuthMiddleware(
   try {
     const decoded = verify(token, process.env.JWT_SECRET!) as JwtPayload;
 
-    const user = await prisma.user.findUnique({
-      where: { email: decoded.email },
-    });
+    const user = await userService.getUserByEmail(decoded.email);
 
     if (!user) {
       return res.status(403).json({ message: "Unauthorized access" });

@@ -4,7 +4,7 @@ import { config } from "dotenv";
 config(); // Load environment variables
 
 export function generateToken(payload: any) {
-  return sign(payload, process.env.JWT_SECRET!, { expiresIn: "1h" });
+  return sign(payload, process.env.JWT_SECRET!, { expiresIn: "24h" });
 }
 
 export function verifyToken(token: string) {
