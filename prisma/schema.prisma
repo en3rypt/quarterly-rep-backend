@@ -37,8 +37,11 @@ model Submission {
   object Object @relation(fields: [objectId], references: [uuid])
 }
 
-model Date {
-  quarter   Int    @id
-  startDate String
-  endDate   String
+model Quarters {
+  quarter Int
+  year Int
+  startDate DateTime
+  endDate   DateTime
+
+  @@id([year, quarter])
 }

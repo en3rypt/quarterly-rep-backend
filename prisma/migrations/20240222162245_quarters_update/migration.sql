@@ -1,10 +1,10 @@
 -- CreateTable
 CREATE TABLE "User" (
-    "username" TEXT NOT NULL,
+    "email" TEXT NOT NULL,
     "password" TEXT NOT NULL,
     "role" TEXT NOT NULL,
 
-    CONSTRAINT "User_pkey" PRIMARY KEY ("username")
+    CONSTRAINT "User_pkey" PRIMARY KEY ("email")
 );
 
 -- CreateTable
@@ -28,16 +28,17 @@ CREATE TABLE "Submission" (
 );
 
 -- CreateTable
-CREATE TABLE "Date" (
+CREATE TABLE "Quarters" (
     "quarter" INTEGER NOT NULL,
-    "startDate" TEXT NOT NULL,
-    "endDate" TEXT NOT NULL,
+    "year" INTEGER NOT NULL,
+    "startDate" TIMESTAMP(3) NOT NULL,
+    "endDate" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "Date_pkey" PRIMARY KEY ("quarter")
+    CONSTRAINT "Quarters_pkey" PRIMARY KEY ("year","quarter")
 );
 
 -- AddForeignKey
-ALTER TABLE "Submission" ADD CONSTRAINT "Submission_uid_fkey" FOREIGN KEY ("uid") REFERENCES "User"("username") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Submission" ADD CONSTRAINT "Submission_uid_fkey" FOREIGN KEY ("uid") REFERENCES "User"("email") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Submission" ADD CONSTRAINT "Submission_objectId_fkey" FOREIGN KEY ("objectId") REFERENCES "Object"("uuid") ON DELETE RESTRICT ON UPDATE CASCADE;
