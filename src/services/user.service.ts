@@ -5,7 +5,13 @@ import { AppError } from "../utils/errorHandler";
 const prisma = new PrismaClient();
 
 export class UserService {
-  async createUser(email: string, role: string, password?: string) {
+  async createUser(
+    email: string,
+    role: string,
+    department: string,
+    order: number,
+    password?: string
+  ) {
     const randomPassword = password ?? Math.random().toString(36).slice(-8);
     const hashedPassword = await bcrypt.hash(randomPassword, 10);
 
@@ -14,6 +20,8 @@ export class UserService {
         email,
         password: hashedPassword,
         role,
+        department,
+        order,
       },
     });
 
@@ -38,5 +46,22 @@ export class UserService {
 
   async getAllUsers() {
     return await prisma.user.findMany();
+  }
+
+  async getByOrder() {
+    return await prisma.user.findMany({
+      orderBy: {
+        order: "asc",
+      },
+    });
+  }
+
+  async getAllDepartmentAndOrder() {
+    return await prisma.user.findMany({
+      select: {
+        department: true,
+        order: true,
+      },
+    });
   }
 }

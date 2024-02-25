@@ -13,35 +13,31 @@ datasource db {
 
 
 model User {
-  email String @id
-  password String
-  role     String
-  submissions Submission[]
-}
-
-model Object {
-  uuid String @id
-  url  String
+  email      String    @id @unique
+  password   String
+  department String
+  role       String
+  order      Int
   submissions Submission[]
 }
 
 model Submission {
-  quarter    Int
-  uuid       Int @id
-  year       Int
-  uid        String
-  objectId String
-  status     String
-
-  user   User  @relation(fields: [uid], references: [email])
-  object Object @relation(fields: [objectId], references: [uuid])
+  uuid       String @id @unique 
+  user       User   @relation(fields: [userEmail], references: [email])
+  userEmail  String 
+  quarter    Int 
+  year       Int 
+  objectURL  String 
+  status     String 
+  modifiedAt DateTime
 }
 
-model Quarters {
-  quarter Int
-  year Int
-  startDate DateTime
-  endDate   DateTime
+model Quarter {
+  quarter    Int      
+  year       Int    
+  startDate DateTime  
+  endDate   DateTime  
 
   @@id([year, quarter])
+
 }
