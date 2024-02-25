@@ -5,4 +5,5 @@ export interface Submission {
   year: number;
   objectURL: string;
   status: string;
+  modifiedAt: Date;
 }

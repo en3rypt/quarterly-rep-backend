@@ -14,7 +14,7 @@ export class UserService {
   ) {
     const randomPassword = password ?? Math.random().toString(36).slice(-8);
     const hashedPassword = await bcrypt.hash(randomPassword, 10);
-
+    order = parseInt(order.toString()) || 0;
     const user = await prisma.user.create({
       data: {
         email,

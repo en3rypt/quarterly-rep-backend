@@ -3,8 +3,10 @@ import { minioConfig } from "../config/minio.config";
 
 export class MinioService {
   private readonly minioClient: Client;
+  private readonly bucketName: string;
   constructor() {
     this.minioClient = new Client(minioConfig);
+    this.bucketName = process.env.MINIO_BUCKET_NAME ?? "local-submissions";
   }
 
   private async streamToBuffer(stream: any): Promise<Buffer> {
@@ -16,18 +18,33 @@ export class MinioService {
     });
   }
 
-  public async uploadFile(
-    bucketName: string,
+  async uploadFile(
     fileName: string,
-    filePath: string
+    fileBuffer: Buffer,
+    contentLength: number,
+    contentType: string
   ) {
-    await this.minioClient.fPutObject(bucketName, fileName, filePath);
+    const bucketExists = await this.minioClient.bucketExists(this.bucketName);
+    if (!bucketExists) {
+      await this.minioClient.makeBucket(this.bucketName, "india"); // Replace 'india' with the actual region if necessary.
+    }
+
+    await this.minioClient.putObject(
+      this.bucketName,
+      fileName,
+      fileBuffer,
+      contentLength,
+      { "Content-Type": contentType }
+    );
   }
 
-  public async getFile(bucketName: string, fileName: string) {
-    // return await this.minioClient.getObject(bucketName, fileName);
+  public async getFile(fileName: string) {
+    // return await this.minioClient.getObject(this.bucketName, fileName);
     try {
-      const dataStream = await this.minioClient.getObject(bucketName, fileName);
+      const dataStream = await this.minioClient.getObject(
+        this.bucketName,
+        fileName
+      );
       return await this.streamToBuffer(dataStream);
     } catch (error) {
       console.error("Error retrieving file from Minio:", error);
