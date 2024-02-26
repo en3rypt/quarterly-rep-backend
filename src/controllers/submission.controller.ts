@@ -42,11 +42,6 @@ export class SubmissionController {
   async uploadFiles(req: Request, res: Response) {
     try {
       const { uuid } = req.params;
-      console.log(
-        "🚀 ~ SubmissionController ~ uploadFiles ~ req.files:",
-        req.files
-      );
-
       await submissionService.uploadAndMergeFiles(
         uuid,
         req.files as Express.Multer.File[]

@@ -55,29 +55,14 @@ export class SubmissionService {
     return await prisma.submission.delete({ where: { uuid } });
   }
 
-  // async uploadFile(uuid: string, file: Express.Multer.File) {
-  //   const objectURL = await this.minioService.uploadFile(uuid, file);
-  //   const submission = await prisma.submission.update({
-  //     where: { uuid },
-  //     data: { objectURL },
-  //   });
-  //   return submission;
-  // }
-
   async uploadAndMergeFiles(uuid: string, files: Express.Multer.File[]) {
     try {
-      const submissionFiles = await Promise.all(
-        files.map(async (file) => ({
-          originalFilename: file.originalname,
-          tempFilePath: file.path,
-        }))
-      );
-
+      //upload to minIO
       const mergedFileName = `${uuidv4()}.pdf`;
       const mergedFilePath = `uploads/${mergedFileName}`;
 
       await this.pdfService.mergePDFs(
-        submissionFiles.map((f) => f.tempFilePath),
+        files.map((f) => f.path),
         mergedFilePath
       );
 
@@ -90,11 +75,23 @@ export class SubmissionService {
         "application/pdf"
       );
 
-      await Promise.all(submissionFiles.map((f) => fs.unlink(f.tempFilePath)));
-      await fs.unlink(mergedFilePath);
+      //unlink all temp files in uploads folder
+      await Promise.all([
+        ...files.map((f) => fs.unlink(f.path)),
+        fs.unlink(mergedFilePath),
+      ]);
 
       const objectURL = `http://minio:9000/${this.bucketName}/${mergedFileName}`;
 
+      //remove already existing file
+      const existingSubmission = await this.getSubmission(uuid);
+      if (existingSubmission && existingSubmission.objectURL !== "") {
+        const existingFileName =
+          existingSubmission.objectURL.split("/").pop() ?? "";
+        await this.minioService.removeFile(this.bucketName, existingFileName);
+      }
+
+      //add new file to submission
       await this.updateSubmission(uuid, objectURL);
 
       return objectURL;
