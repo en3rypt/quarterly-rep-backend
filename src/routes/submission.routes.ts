@@ -9,4 +9,13 @@ submissionRouter.post("/", submissionController.createSubmission);
 submissionRouter.get("/", submissionController.getSubmissions);
 submissionRouter.get("/:uuid", submissionController.getSubmission);
 submissionRouter.put("/:uuid", submissionController.uploadFiles);
+submissionRouter.get(
+  "/user/:year",
+  submissionController.getSubmissionsByYearAndUser
+);
+
+submissionRouter.get(
+  "/download/:uuid",
+  submissionController.downloadSubmission
+);
 export default submissionRouter;

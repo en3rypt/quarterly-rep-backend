@@ -42,6 +42,12 @@ export class SubmissionService {
     return await prisma.submission.findMany();
   }
 
+  async getSubmissionsByYearAndUser(year: number, userEmail: string) {
+    return await prisma.submission.findMany({
+      where: { year, userEmail },
+    });
+  }
+
   async updateSubmission(uuid: string, objecURL: string) {
     return await prisma.submission.update({
       where: { uuid },
@@ -53,6 +59,16 @@ export class SubmissionService {
 
   async deleteSubmission(uuid: string) {
     return await prisma.submission.delete({ where: { uuid } });
+  }
+
+  async downloadSubmission(uuid: string) {
+    const submission = await this.getSubmission(uuid);
+    if (!submission) {
+      return undefined;
+    }
+    const fileName = submission.objectURL.split("/").pop() ?? "";
+    const fileBuffer = await this.minioService.getFile(fileName);
+    return fileBuffer;
   }
 
   async uploadAndMergeFiles(uuid: string, files: Express.Multer.File[]) {

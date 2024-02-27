@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import * as bcrypt from "bcryptjs";
 import { AppError } from "../utils/errorHandler";
+import { Role } from "../enums/role.enum";
 
 const prisma = new PrismaClient();
 
@@ -50,6 +51,9 @@ export class UserService {
 
   async getByOrder() {
     return await prisma.user.findMany({
+      where: {
+        role: Role.REPRESENTATIVE,
+      },
       orderBy: {
         order: "asc",
       },
@@ -62,6 +66,14 @@ export class UserService {
         department: true,
         order: true,
       },
+    });
+  }
+
+  async updateUserOrder(email: string, order: number) {
+    order = parseInt(order.toString(), 10) || 0;
+    return await prisma.user.update({
+      where: { email },
+      data: { order },
     });
   }
 }

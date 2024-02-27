@@ -32,6 +32,28 @@ export class SubmissionController {
     res.status(200).json(submissions);
   }
 
+  async getSubmissionsByYearAndUser(req: Request, res: Response) {
+    const { year } = req.params;
+    const { email } = req.user || { email: "" };
+    const submissions = await submissionService.getSubmissionsByYearAndUser(
+      parseInt(year, 10),
+      email
+    );
+    res.status(200).json(submissions);
+  }
+
+  async downloadSubmission(req: Request, res: Response) {
+    const { uuid } = req.params;
+    const submission = await submissionService.getSubmission(uuid);
+    if (!submission) {
+      res.status(404).json({ message: "Submission not found" });
+      return;
+    }
+    const file = await submissionService.downloadSubmission(uuid);
+    res.setHeader("Content-Disposition", `attachment; filename=${uuid}.pdf`);
+    res.setHeader("Content-Type", "application/pdf");
+    res.status(200).send(file);
+  }
   async updateSubmission(req: Request, res: Response) {
     const { uuid } = req.params;
     const data = req.body;

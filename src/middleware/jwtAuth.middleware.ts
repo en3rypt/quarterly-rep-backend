@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 import { verify } from "jsonwebtoken";
 import { PrismaClient } from "@prisma/client";
-import { JwtPayload } from "../interface";
 import { UserService } from "../services/user.service";
+import { JwtPayload } from "../interface/jwt.interface";
 const prisma = new PrismaClient();
 const userService = new UserService();
 
@@ -28,7 +28,12 @@ export async function jwtAuthMiddleware(
       return res.status(403).json({ message: "Unauthorized access" });
     }
 
-    req.user = { email: decoded.email, role: decoded.role };
+    req.user = {
+      email: decoded.email,
+      role: decoded.role,
+      department: user.department,
+      order: user.order,
+    };
 
     next();
   } catch (error) {

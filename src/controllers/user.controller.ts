@@ -44,4 +44,20 @@ export class UserController {
     const users = await userService.getAllUsers();
     res.status(200).json(users);
   }
+
+  async getByOrder(req: Request, res: Response) {
+    const users = await userService.getByOrder();
+    res.status(200).json(users);
+  }
+
+  async getAllDepartmentAndOrder(req: Request, res: Response) {
+    const users = await userService.getAllDepartmentAndOrder();
+    res.status(200).json(users);
+  }
+
+  async updateUserOrder(req: Request, res: Response) {
+    const { order, email } = req.body;
+    const user = await userService.updateUserOrder(email, order);
+    res.status(200).json(user);
+  }
 }
