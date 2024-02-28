@@ -42,4 +42,23 @@ export class PDFService {
     const mergedPdfBytes = await mergedPdf.save();
     await fs.writeFile(outputFilePath, mergedPdfBytes);
   }
+
+  async mergeMinioPDFs(
+    pdfBuffers: Buffer[],
+    outputFilePath: string
+  ): Promise<void> {
+    const mergedPdf = await PDFDocument.create();
+  
+    for (const pdfBuffer of pdfBuffers) {
+      const pdfDoc = await PDFDocument.load(pdfBuffer);
+      const copiedPages = await mergedPdf.copyPages(
+        pdfDoc,
+        pdfDoc.getPageIndices()
+      );
+      copiedPages.forEach((page) => mergedPdf.addPage(page));
+    }
+  
+    const mergedPdfBytes = await mergedPdf.save();
+    await fs.writeFile(outputFilePath, mergedPdfBytes);
+  }
 }
