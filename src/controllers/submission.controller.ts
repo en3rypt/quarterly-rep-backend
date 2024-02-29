@@ -54,6 +54,14 @@ export class SubmissionController {
     res.setHeader("Content-Type", "application/pdf");
     res.status(200).send(file);
   }
+
+  async downloadAllSubmissions(req: Request, res: Response){
+    const {year, quarter} = req.params
+    const file = await submissionService.downloadAllSubmissions(year,quarter);
+    res.setHeader("Content-Disposition", `attachment; filename=Consolidated.pdf`);
+    res.setHeader("Content-Type", "application/pdf");
+    res.status(200).send(file);
+  }
   async updateSubmission(req: Request, res: Response) {
     const { uuid } = req.params;
     const data = req.body;

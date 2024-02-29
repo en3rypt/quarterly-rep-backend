@@ -71,6 +71,34 @@ export class SubmissionService {
     return fileBuffer;
   }
 
+  async downloadAllSubmissions(year: number, quarter:number){
+    const submissions = await prisma.submission.findMany({
+      where: {
+        year,
+        quarter,
+      },
+      include: {
+        user: true,
+      },
+    });
+    const sortedSubmissions = submissions.filter(
+      (submission) => submission.user.role === "Representative"
+    ).sort(
+      (a, b) => a.user.order - b.user.order
+    );
+
+  const pdfBuffers = await Promise.all(
+    sortedSubmissions.map((submission) =>
+      this.minioService.getFile(submission.objectURL)
+    )
+  );
+  const outputFilePath = "Consolidated.pdf"
+  this.pdfService.mergeMinioPDFs(pdfBuffers, outputFilePath)
+  .then(() => console.log("PDFs merged successfully"))
+  .catch((err) => console.error("Error merging PDFs:", err));
+  }
+
+  
   async uploadAndMergeFiles(uuid: string, files: Express.Multer.File[]) {
     try {
       //upload to minIO
