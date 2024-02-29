@@ -6,6 +6,7 @@ import errorHandler from "./utils/errorHandler";
 import swagger from "./utils/swagger";
 import bodyParser from "body-parser";
 import upload from "./middleware/upload.middleware";
+import cors from "cors";
 var listEndpoints = require("express-list-endpoints");
 
 //For env File
@@ -16,6 +17,11 @@ const port = process.env.PORT || 3000;
 
 // app.use(bodyParser.urlencoded({ extended: false }));
 // app.use(bodyParser.json());
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+  })
+);
 app.use(errorHandler);
 app.use(express.urlencoded({ extended: true })); // For parsing URL-encoded form data
 app.use(express.json()); // For parsing JSON payloads
