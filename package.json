@@ -14,7 +14,8 @@
     "prisma:generate": "npx prisma generate",
     "prisma:migrate": "npx prisma migrate dev --name init",
     "prisma:studio": "npx prisma studio",
-    "setup": "bash ./setup.sh"
+    "setup": "bash ./setup.sh",
+    "railway:init": "npx prisma generate && docker-compose up"
   },
   "keywords": [],
   "author": "",
