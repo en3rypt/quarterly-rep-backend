@@ -1,9 +1,7 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
   binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+  previewFeatures = ["relationJoins"]
 }
 
 datasource db {
@@ -11,33 +9,33 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model User {
-  email      String    @id @unique
-  password   String
-  department String
-  role       String
-  order      Int
+  email       String       @id @unique
+  password    String
+  department  String
+  role        String
+  order       Int
   submissions Submission[]
 }
 
 model Submission {
-  uuid       String @id @unique 
-  user       User   @relation(fields: [userEmail], references: [email])
-  userEmail  String 
-  quarter    Int 
-  year       Int 
-  objectURL  String 
-  status     String 
-  modifiedAt DateTime
+  uuid        String   @id @unique
+  userEmail   String
+  quarter     Int
+  year        Int
+  objectURL   String
+  status      String
+  modifiedAt  DateTime
+  quarterInfo Quarter  @relation(fields: [quarter, year], references: [quarter, year])
+  user        User     @relation(fields: [userEmail], references: [email])
 }
 
 model Quarter {
-  quarter    Int      
-  year       Int    
-  startDate DateTime  
-  endDate   DateTime  
+  quarter     Int
+  year        Int
+  startDate   DateTime
+  endDate     DateTime
+  submissions Submission[]
 
   @@id([year, quarter])
-
 }

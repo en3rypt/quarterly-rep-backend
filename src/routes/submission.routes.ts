@@ -18,4 +18,13 @@ submissionRouter.get(
   "/download/:uuid",
   submissionController.downloadSubmission
 );
+
+submissionRouter.get(
+  "/:year/:quarter",
+  submissionController.getSubmissionsByYearQuarter
+);
+submissionRouter.get(
+  "/download/all/:year/:quarter",
+  submissionController.downloadAllSubmissions
+);
 export default submissionRouter;

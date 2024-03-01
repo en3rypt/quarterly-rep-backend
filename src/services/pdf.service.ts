@@ -1,26 +1,6 @@
-// import PDFMerge from "pdf-merge";
-// import { PDFDocument } from "pdf-lib";
-// import { promises as fs } from "fs";
-
-// export class PDFService {
-//   async mergePDFs(filePaths: string[], outputPath: string): Promise<void> {
-//     try {
-//       const buffer = await PDFMerge(filePaths, { output: outputPath });
-
-//       // Success! Do something with the merged PDF buffer
-//       console.log("PDF merge successful!");
-
-//       // Optionally, save the merged PDF to the filesystem:
-//       await fs.writeFile(outputPath, buffer);
-//     } catch (error) {
-//       console.error("PDF merge failed:", error);
-//       // Handle the error appropriately (e.g., throw an exception)
-//     }
-//   }
-// }
-
 import { PDFDocument } from "pdf-lib";
 import { promises as fs } from "fs";
+import { Buffer } from "buffer";
 
 export class PDFService {
   async mergePDFs(
@@ -43,12 +23,9 @@ export class PDFService {
     await fs.writeFile(outputFilePath, mergedPdfBytes);
   }
 
-  async mergeMinioPDFs(
-    pdfBuffers: Buffer[],
-    outputFilePath: string
-  ): Promise<void> {
+  async mergeMinioPDFs(pdfBuffers: Buffer[]): Promise<Buffer> {
     const mergedPdf = await PDFDocument.create();
-  
+
     for (const pdfBuffer of pdfBuffers) {
       const pdfDoc = await PDFDocument.load(pdfBuffer);
       const copiedPages = await mergedPdf.copyPages(
@@ -57,8 +34,8 @@ export class PDFService {
       );
       copiedPages.forEach((page) => mergedPdf.addPage(page));
     }
-  
+
     const mergedPdfBytes = await mergedPdf.save();
-    await fs.writeFile(outputFilePath, mergedPdfBytes);
+    return Buffer.from(mergedPdfBytes);
   }
 }

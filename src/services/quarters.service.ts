@@ -18,14 +18,29 @@ export class QuarterServices {
           endDate,
         },
       });
-      console.log("Quarter Created");
       return quarters;
     } catch (error) {
       console.error(error);
     }
   }
 
-  async updateEndDate(quarter: number, year: number, endDate: Date) {
+  async updateEndDate(year: number, quarter: number, endDate: Date) {
+    const existingQuarter = await prisma.quarter.findUnique({
+      where: {
+        year_quarter: {
+          year,
+          quarter,
+        },
+      },
+    });
+
+    if (!existingQuarter) {
+      console.error(
+        `Quarter with year ${year} and quarter ${quarter} not found.`
+      );
+      return null;
+    }
+
     return await prisma.quarter.update({
       where: {
         year_quarter: {
@@ -34,7 +49,7 @@ export class QuarterServices {
         },
       },
       data: {
-        endDate,
+        endDate: new Date(endDate),
       },
     });
   }
@@ -51,10 +66,20 @@ export class QuarterServices {
   }
 
   async getQuarterByYear(year: number) {
-    return await prisma.quarter.findMany({ where: { year } });
+    return await prisma.quarter.findMany({
+      where: { year },
+      orderBy: {
+        quarter: "asc",
+      },
+    });
   }
 
   async getAllQuarter() {
-    return await prisma.quarter.findMany();
+    //sort by startDate
+    return await prisma.quarter.findMany({
+      orderBy: {
+        startDate: "asc",
+      },
+    });
   }
 }

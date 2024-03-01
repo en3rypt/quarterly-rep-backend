@@ -7,8 +7,8 @@ const quarterRouter = Router();
 
 quarterRouter.post("/", quarterController.createQuarter);
 quarterRouter.put("/", quarterController.updateQuarter);
-quarterRouter.get("/:year/:quarter", quarterController.getQuarterByYearQuarter);
+quarterRouter.put("/update", quarterController.updateQuarter);
 quarterRouter.get("/:year", quarterController.getQuarterByYear);
+quarterRouter.get("/:year/:quarter", quarterController.getQuarterByYearQuarter);
 quarterRouter.get("/", quarterController.getAllQuarters);
-
 export default quarterRouter;

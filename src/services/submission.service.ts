@@ -40,6 +40,7 @@ export class SubmissionService {
 
   async getSubmissions() {
     return await prisma.submission.findMany();
+    // return await prisma.submission.deleteMany();
   }
 
   async getSubmissionsByYearAndUser(year: number, userEmail: string) {
@@ -48,11 +49,22 @@ export class SubmissionService {
     });
   }
 
+  async getSubmissionsByYearQuarter(year: number, quarter: number) {
+    return await prisma.submission.findMany({
+      where: { year, quarter },
+      include: {
+        user: true,
+      },
+    });
+  }
+
   async updateSubmission(uuid: string, objecURL: string) {
     return await prisma.submission.update({
       where: { uuid },
       data: {
         objectURL: objecURL,
+        status: "SUBMITTED",
+        modifiedAt: new Date(),
       },
     });
   }
@@ -71,7 +83,7 @@ export class SubmissionService {
     return fileBuffer;
   }
 
-  async downloadAllSubmissions(year: number, quarter:number){
+  async downloadAllSubmissions(year: number, quarter: number) {
     const submissions = await prisma.submission.findMany({
       where: {
         year,
@@ -81,24 +93,31 @@ export class SubmissionService {
         user: true,
       },
     });
-    const sortedSubmissions = submissions.filter(
-      (submission) => submission.user.role === "Representative"
-    ).sort(
-      (a, b) => a.user.order - b.user.order
+
+    const sortedSubmissions = submissions
+      .filter((submission) => submission.user.role === "Representative")
+      .sort((a, b) => a.user.order - b.user.order);
+
+    const hasPendingStatus = sortedSubmissions.some(
+      (item) => item.status === "PENDING"
     );
 
-  const pdfBuffers = await Promise.all(
-    sortedSubmissions.map((submission) =>
-      this.minioService.getFile(submission.objectURL)
-    )
-  );
-  const outputFilePath = "Consolidated.pdf"
-  this.pdfService.mergeMinioPDFs(pdfBuffers, outputFilePath)
-  .then(() => console.log("PDFs merged successfully"))
-  .catch((err) => console.error("Error merging PDFs:", err));
+    if (hasPendingStatus) {
+      throw new Error(
+        "All submissions must be submitted before downloading consolidated PDF"
+      );
+    }
+    const pdfBuffers = await Promise.all(
+      sortedSubmissions.map((submission) =>
+        this.minioService.getFile(submission.objectURL.split("/").pop() ?? "")
+      )
+    );
+
+    const outputFilePath = `uploads/Report_${year}_Quarter${quarter}_consolidated.pdf`;
+    const pdfBuffer = await this.pdfService.mergeMinioPDFs(pdfBuffers);
+    return pdfBuffer;
   }
 
-  
   async uploadAndMergeFiles(uuid: string, files: Express.Multer.File[]) {
     try {
       //upload to minIO

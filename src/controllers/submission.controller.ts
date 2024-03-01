@@ -1,14 +1,16 @@
+import path from "path";
 import { SubmissionStatus } from "../enums/submissionStatus.enum";
 import { SubmissionService } from "../services/submission.service";
 import { Request, Response } from "express";
+import { promises as fs } from "fs";
 
 const submissionService = new SubmissionService();
 export class SubmissionController {
   async createSubmission(req: Request, res: Response) {
     try {
-      const { email } = req.user || { email: "" };
       const year = parseInt(req.body.year, 10);
       const quarter = parseInt(req.body.quarter, 10);
+      const email = req.body.email;
       const submission = await submissionService.createSubmission(
         email,
         quarter,
@@ -42,6 +44,15 @@ export class SubmissionController {
     res.status(200).json(submissions);
   }
 
+  async getSubmissionsByYearQuarter(req: Request, res: Response) {
+    const { year, quarter } = req.params;
+    const submissions = await submissionService.getSubmissionsByYearQuarter(
+      parseInt(year, 10),
+      parseInt(quarter, 10)
+    );
+    res.status(200).json(submissions);
+  }
+
   async downloadSubmission(req: Request, res: Response) {
     const { uuid } = req.params;
     const submission = await submissionService.getSubmission(uuid);
@@ -50,17 +61,25 @@ export class SubmissionController {
       return;
     }
     const file = await submissionService.downloadSubmission(uuid);
-    res.setHeader("Content-Disposition", `attachment; filename=${uuid}.pdf`);
-    res.setHeader("Content-Type", "application/pdf");
+    // res.setHeader("Content-Disposition", `attachment; filename=${uuid}.pdf`);
+    // res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Type", "application/octet-stream");
     res.status(200).send(file);
   }
 
-  async downloadAllSubmissions(req: Request, res: Response){
-    const {year, quarter} = req.params
-    const file = await submissionService.downloadAllSubmissions(year,quarter);
-    res.setHeader("Content-Disposition", `attachment; filename=Consolidated.pdf`);
-    res.setHeader("Content-Type", "application/pdf");
-    res.status(200).send(file);
+  async downloadAllSubmissions(req: Request, res: Response) {
+    try {
+      const year = parseInt(req.params.year, 10);
+      const quarter = parseInt(req.params.quarter, 10);
+      const pdfBuffer = await submissionService.downloadAllSubmissions(
+        year,
+        quarter
+      );
+      res.setHeader("Content-Type", "application/octet-stream");
+      res.status(200).send(pdfBuffer);
+    } catch (error) {
+      res.status(500).json({ error: "Unknown Error Occured" });
+    }
   }
   async updateSubmission(req: Request, res: Response) {
     const { uuid } = req.params;
