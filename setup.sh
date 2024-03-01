@@ -33,5 +33,4 @@ npx prisma db push
 npx prisma generate
 
 # Start the application and services
-docker-compose up -d
 echo "Setup complete! Your application should be accessible."
