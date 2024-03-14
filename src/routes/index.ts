@@ -10,7 +10,7 @@ const router = Router();
 
 router.use("/auth", authRouter);
 router.use("/user", jwtAuthMiddleware, userRouter);
-router.use("/quarter", jwtAuthMiddleware, quarterRouter);
+router.use("/quarter", quarterRouter);
 router.use("/submission", jwtAuthMiddleware, submissionRouter);
 
 export default router;
