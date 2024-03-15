@@ -3,7 +3,7 @@ import {QuarterServices} from './quarters.service'
 import { SubmissionService } from './submission.service';
 import { UserService } from './user.service';
 
-class NewYearJob {
+export class NewYearJob {
     private cronJob: CronJob;
 
     constructor() {
@@ -47,4 +47,3 @@ class NewYearJob {
     }
 }
 
-const newYearJob = new NewYearJob();

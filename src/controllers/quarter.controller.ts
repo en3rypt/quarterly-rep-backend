@@ -1,7 +1,9 @@
 import { Request, Response } from "express";
 import { QuarterServices } from "../services/quarters.service";
+import { PDFService } from "../services/pdf.service";
 
 const quarterServices = new QuarterServices();
+const pdfService = new PDFService();
 
 export class QuarterController {
   async createQuarter(req: Request, res: Response) {
@@ -56,6 +58,7 @@ export class QuarterController {
 
   async getAllQuarters(req: Request, res: Response) {
     try {
+      pdfService.createPDFIndex()
       const quart = await quarterServices.getAllQuarter();
       res.status(200).json(quart);
     } catch (error: any) {

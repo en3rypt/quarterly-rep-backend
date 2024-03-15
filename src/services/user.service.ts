@@ -2,8 +2,12 @@ import { PrismaClient } from "@prisma/client";
 import * as bcrypt from "bcryptjs";
 import { AppError } from "../utils/errorHandler";
 import { Role } from "../enums/role.enum";
+import { SubmissionService } from "./submission.service";
+import { QuarterServices } from "./quarters.service";
 
 const prisma = new PrismaClient();
+const submission  = new SubmissionService()
+const quatersCreator = new QuarterServices()
 
 export class UserService {
   async createUser(
@@ -26,6 +30,17 @@ export class UserService {
       },
     });
 
+    const currentYear = new Date().getFullYear();
+    const today = new Date()
+    const currentQuarter = (await quatersCreator.getQuarterByYear(currentYear)).filter((date) => date.endDate > today)[0].quarter
+
+    for (let quarter = currentQuarter; quarter <= 4; quarter++){ 
+      var status = "NOT_STARTED"
+      if (quarter === currentQuarter){
+          status = "PENDING"
+        }
+        await submission.createSubmission(email,quarter,currentYear,status)
+      }
     return user;
   }
 

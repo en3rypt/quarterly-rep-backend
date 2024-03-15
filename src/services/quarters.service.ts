@@ -75,7 +75,6 @@ export class QuarterServices {
   }
 
   async getAllQuarter() {
-    //sort by startDate
     return await prisma.quarter.findMany({
       orderBy: {
         startDate: "asc",

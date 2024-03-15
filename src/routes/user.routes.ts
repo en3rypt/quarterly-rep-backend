@@ -8,7 +8,7 @@ const userRouter = Router();
 
 userRouter.get("/order", userController.getByOrder);
 userRouter.put("/order", userController.updateUserOrder);
-userRouter.post("/", authorize(Role.ADMIN), userController.createUser);
+userRouter.post("/", userController.createUser);
 userRouter.put("/", userController.updateUser);
 userRouter.delete("/", userController.deleteUser);
 userRouter.get("/:email", userController.getUserByEmail);
