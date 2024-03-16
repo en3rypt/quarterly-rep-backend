@@ -29,18 +29,20 @@ export class UserService {
         order,
       },
     });
+    if(role === Role.REPRESENTATIVE){
 
-    const currentYear = new Date().getFullYear();
-    const today = new Date()
-    const currentQuarter = (await quatersCreator.getQuarterByYear(currentYear)).filter((date) => date.endDate > today)[0].quarter
+      const currentYear = new Date().getFullYear();
+      const today = new Date()
+      const currentQuarter = (await quatersCreator.getQuarterByYear(currentYear)).filter((date) => date.endDate > today)[0].quarter
 
-    for (let quarter = currentQuarter; quarter <= 4; quarter++){ 
-      var status = "NOT_STARTED"
-      if (quarter === currentQuarter){
+      for (let quarter = currentQuarter; quarter <= 4; quarter++){ 
+        var status = "NOT_STARTED"
+        if (quarter === currentQuarter){
           status = "PENDING"
         }
         await submission.createSubmission(email,quarter,currentYear,status)
       }
+    }
     return user;
   }
 
@@ -89,6 +91,20 @@ export class UserService {
     return await prisma.user.update({
       where: { email },
       data: { order },
+    });
+  }
+
+  async setResetToken(email: string, token: string) {
+    return await prisma.user.update({
+      where: { email },
+      data: { resetToken: token },
+    });
+  }
+
+  async deleteResetToken(email: string) {
+    return await prisma.user.update({
+      where: { email },
+      data: { resetToken: null },
     });
   }
 }

@@ -15,4 +15,27 @@ export class AuthController {
       return res.status(500).json({ message: error.message });
     }
   }
+
+  async sendResetLink(req: Request, res: Response){
+    const { email } = req.body;
+    try {
+      const result = await authService.setResetLink(email);
+      if (!result) {
+        return res.status(404).json({ message: "Invalid email" });
+      }
+      return res.status(200).json(result);
+    } catch (error: any) {
+      return res.status(500).json({ message: error.message });
+    }
+  }
+
+  async resetPassword(req: Request, res: Response){
+    const { email, newPassword } = req.body;
+    try {
+      const result = await authService.resetPassword(email, newPassword);
+      return res.status(200).json(result);
+    } catch (error: any) {
+      return res.status(500).json({ message: error.message });
+    }
+  }
 }

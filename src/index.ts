@@ -6,8 +6,8 @@ import errorHandler from "./utils/errorHandler";
 import swagger from "./utils/swagger";
 import bodyParser from "body-parser";
 import upload from "./middleware/upload.middleware";
-import { NewYearJob } from "./services/cronjobs.services"
 import cors from "cors";
+import { NewYearJob } from "./services/cronjobs.service";
 var listEndpoints = require("express-list-endpoints");
 
 //For env File

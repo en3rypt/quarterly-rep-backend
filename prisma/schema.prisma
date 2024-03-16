@@ -15,6 +15,7 @@ model User {
   department  String
   role        String
   order       Int
+  resetToken  String?
   submissions Submission[]
 }
 

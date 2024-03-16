@@ -6,8 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "npx tsc",
-    "start": "ts-node src/index.ts",
-    "dev": "npx prisma generate && docker-compose up",
+    "start": "ts-node --transpile-only src/index.ts",
+    "dev": "ts-node-dev --poll --respawn --transpile-only src/index.ts",
     "docker:init": "npx prisma generate && docker-compose build",
     "docker:dev": "docker-compose up",
     "docker:build": "docker-compose build",

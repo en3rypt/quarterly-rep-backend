@@ -20,5 +20,8 @@ const authRouter = Router();
  *
  */
 authRouter.post("/login", authController.login);
+authRouter.post("/reset-link", authController.sendResetLink);
+authRouter.post("/reset-password", authController.resetPassword);
+
 
 export default authRouter;
