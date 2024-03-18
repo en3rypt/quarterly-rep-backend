@@ -25,3 +25,40 @@ export function toRoman(num: number) {
 
   return result;
 }
+
+export function formatDateString(startDate: string, endDate: string) {
+  let sd: Date | undefined;
+  let ed: Date | undefined;
+
+  if (typeof startDate === 'string') {
+      sd = new Date(startDate);
+  }
+  if (typeof endDate === 'string') {
+      ed = new Date(endDate);
+  }
+
+  const months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+
+  const startYear = sd ? sd.getUTCFullYear() : "";
+  const startMonth = sd ? months[sd.getUTCMonth()] : "";
+
+  const endYear = ed ? ed.getUTCFullYear() : "";
+  const endMonth = ed ? months[ed.getUTCMonth()] : "";
+
+  const formattedString = `${startMonth} ${startYear} - ${endMonth} ${endYear}`;
+
+  return formattedString;
+}
