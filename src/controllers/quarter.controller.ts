@@ -58,7 +58,6 @@ export class QuarterController {
 
   async getAllQuarters(req: Request, res: Response) {
     try {
-      pdfService.createPDFIndex()
       const quart = await quarterServices.getAllQuarter();
       res.status(200).json(quart);
     } catch (error: any) {

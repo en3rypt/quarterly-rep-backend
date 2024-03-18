@@ -3,8 +3,10 @@ import { SubmissionStatus } from "../enums/submissionStatus.enum";
 import { SubmissionService } from "../services/submission.service";
 import { Request, Response } from "express";
 import { promises as fs } from "fs";
+import { QuarterServices } from "../services/quarters.service";
 
 const submissionService = new SubmissionService();
+const quarterService = new QuarterServices();
 export class SubmissionController {
   async createSubmission(req: Request, res: Response) {
     try {

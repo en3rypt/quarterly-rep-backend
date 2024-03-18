@@ -37,12 +37,12 @@ export class AuthService {
   }
 
   async setResetLink(email: string) {
-    const user = await this.userService.getUserByEmail(email);
-    if (!user) {
-      return { status: "error", message: "User not found" };
-    }
+    // const user = await this.userService.getUserByEmail(email);
+    // if (!user) {
+    //   return { status: "error", message: "User not found" };
+    // }
     const resetToken = generateToken({ email: email }, "1h");
-    await this.userService.setResetToken(email, resetToken);
+    // await this.userService.setResetToken(email, resetToken);
     const resetLink = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
     const subject = "Quarterly Submission - Password Reset Link";
     const html = `<!DOCTYPE html>

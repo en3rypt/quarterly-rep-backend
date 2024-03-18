@@ -4,14 +4,17 @@ import { MinioService } from "./minio.service";
 import { v4 as uuidv4 } from "uuid";
 import { PDFService } from "./pdf.service";
 import { promises as fs } from "fs";
+import { QuarterServices } from "./quarters.service";
 
 export class SubmissionService {
   private readonly minioService;
   private readonly pdfService;
   private readonly bucketName;
+  private readonly quarterService;
   constructor() {
     this.minioService = new MinioService();
     this.pdfService = new PDFService();
+    this.quarterService = new QuarterServices();
     this.bucketName = process.env.MINIO_BUCKET_NAME ?? "local-submissions";
   }
 
@@ -93,6 +96,10 @@ export class SubmissionService {
         user: true,
       },
     });
+    const quarterInfo = await this.quarterService.getQuarterByYearQuarter(
+      quarter,
+      year
+    );
 
     const sortedSubmissions = submissions
       .filter((submission) => submission.user.role === "Representative")

@@ -23,26 +23,74 @@ export class PDFService {
     await fs.writeFile(outputFilePath, mergedPdfBytes);
   }
 
-  async createPDFIndex(){
-    const userService = new UserService();
-    const users = await userService.getByOrder();
-    const pdfDoc = await PDFDocument.create()
-    const timesRomanFont = await pdfDoc.embedFont(StandardFonts.TimesRoman)
-  
-    const page = pdfDoc.addPage()
-    const { width, height } = page.getSize()
+  async createPDFHome(quarter: number, startate: string, enddate: string) {
+    const pdfDoc = await PDFDocument.create();
 
-    const fontSize = 30
-    page.drawText('PSG College Of Technology', {
-      x: 50,
-      y: height - 4 * fontSize,
+    const imgBuffer = await fs.readFile("./assets/psg_logo.png");
+    const psgLogo = await pdfDoc.embedPng(imgBuffer);
+    const page = pdfDoc.addPage();
+    const { width: pageWidth } = page.getSize();
+
+    const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+    const fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+
+    //title
+    let fontSize = 18;
+    let y = page.getHeight() - psgLogo.height;
+    page.drawImage(psgLogo, {
+      x: pageWidth / 2 - psgLogo.width / 3.3,
+      y,
+      width: 151.38,
+      height: 200,
+    });
+    y = y - 50;
+    const textWidth = font.widthOfTextAtSize(
+      "PSG COLLEGE OF TECHNOLOGY",
+      fontSize
+    );
+
+    page.drawText("PSG COLLEGE OF TECHNOLOGY", {
+      x: pageWidth / 2 - textWidth / 2,
+      y,
       size: fontSize,
-      font: timesRomanFont,
-      color: rgb(0, 0.53, 0.71),
-    })
+      font: font,
+      color: rgb(0, 0, 0),
+    });
 
+    //title
+    fontSize = 32;
+    y = y - 50;
+    const qtextWidth = font.widthOfTextAtSize(
+      "Quarterly Progress Report",
+      fontSize
+    );
+
+    page.drawText("Quarterly Progress Report", {
+      x: pageWidth / 2 - qtextWidth / 1.8,
+      y,
+      size: fontSize,
+      font: fontBold,
+      color: rgb(0, 0, 0),
+    });
+
+    //date
+    fontSize = 16;
+    y = y - 50;
+    const dtextWidth = font.widthOfTextAtSize(
+      "July 2024 to September 2024",
+      fontSize
+    );
+    page.drawText("July 2024 to September 2024", {
+      x: pageWidth / 2 - dtextWidth / 2,
+      y,
+      size: fontSize,
+      font: font,
+      color: rgb(0, 0, 0),
+    });
+
+    const pdfBytes = await pdfDoc.save();
+    return Buffer.from(pdfBytes);
   }
-  
 
   async mergeMinioPDFs(pdfBuffers: Buffer[]): Promise<Buffer> {
     const mergedPdf = await PDFDocument.create();
