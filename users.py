@@ -9,10 +9,10 @@ headers = {
 }
 
 records = [
-    {'quarter': 1, 'year': 2024, 'startDate': '2024-01-01T00:00:00Z', 'endDate': '2024-03-31T23:59:59Z'},
-    {'quarter': 2, 'year': 2024, 'startDate': '2024-04-01T00:00:00Z', 'endDate': '2024-06-30T23:59:59Z'},
-    {'quarter': 3, 'year': 2024, 'startDate': '2024-07-01T00:00:00Z', 'endDate': '2024-09-30T23:59:59Z'},
-    {'quarter': 4, 'year': 2024, 'startDate': '2024-10-01T00:00:00Z', 'endDate': '2024-12-31T23:59:59Z'}
+    {'quarter': 1, 'year': 2024, 'startDate': '2024-01-05T00:00:00Z', 'endDate': '2024-03-31T23:59:59Z'},
+    {'quarter': 2, 'year': 2024, 'startDate': '2024-04-05T00:00:00Z', 'endDate': '2024-06-30T23:59:59Z'},
+    {'quarter': 3, 'year': 2024, 'startDate': '2024-07-05T00:00:00Z', 'endDate': '2024-09-30T23:59:59Z'},
+    {'quarter': 4, 'year': 2024, 'startDate': '2024-10-05T00:00:00Z', 'endDate': '2024-12-31T23:59:59Z'}
 ]
 
 for record in records:
