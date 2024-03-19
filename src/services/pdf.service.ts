@@ -65,12 +65,9 @@ export class PDFService {
 
     fontSize = 32;
     y = y - 50;
-    const qtextWidth = font.widthOfTextAtSize(
-      "Quarterly Progress Report",
-      fontSize
-    );
+    const qtextWidth = font.widthOfTextAtSize("Quarterly Report", fontSize);
 
-    page.drawText("Quarterly Progress Report", {
+    page.drawText("Quarterly Report", {
       x: pageWidth / 2 - qtextWidth / 1.8,
       y,
       size: fontSize,
