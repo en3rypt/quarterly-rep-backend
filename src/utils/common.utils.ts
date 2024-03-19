@@ -26,17 +26,7 @@ export function toRoman(num: number) {
   return result;
 }
 
-export function formatDateString(startDate: string, endDate: string) {
-  let sd: Date | undefined;
-  let ed: Date | undefined;
-
-  if (typeof startDate === 'string') {
-      sd = new Date(startDate);
-  }
-  if (typeof endDate === 'string') {
-      ed = new Date(endDate);
-  }
-
+export function formatDateString(startDate: Date, endDate: Date) {
   const months = [
     "January",
     "February",
@@ -52,13 +42,13 @@ export function formatDateString(startDate: string, endDate: string) {
     "December",
   ];
 
-  const startYear = sd ? sd.getUTCFullYear() : "";
-  const startMonth = sd ? months[sd.getUTCMonth()] : "";
+  const startYear = startDate ? startDate.getUTCFullYear() : "";
+  const startMonth = startDate ? months[startDate.getUTCMonth()] : "";
 
-  const endYear = ed ? ed.getUTCFullYear() : "";
-  const endMonth = ed ? months[ed.getUTCMonth()] : "";
+  const endYear = endDate ? endDate.getUTCFullYear() : "";
+  const endMonth = endDate ? months[endDate.getUTCMonth()] : "";
 
-  const formattedString = `${startMonth} ${startYear} - ${endMonth} ${endYear}`;
+  const formattendDateString = `${startMonth} ${startYear} - ${endMonth} ${endYear}`;
 
-  return formattedString;
+  return formattendDateString;
 }

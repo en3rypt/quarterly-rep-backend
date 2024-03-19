@@ -2,7 +2,7 @@ import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
 import { promises as fs } from "fs";
 import { Buffer } from "buffer";
 import prisma from "../utils/db";
-import { formatDateString,  toRoman} from "../utils/common.utils";
+import { formatDateString, toRoman } from "../utils/common.utils";
 import { UserService } from "./user.service";
 import quarterRouter from "../routes/quarter.routes";
 import { Submission } from "../interface/submission.interface";
@@ -27,7 +27,7 @@ export class PDFService {
     await fs.writeFile(outputFilePath, mergedPdfBytes);
   }
 
-  async createPDFHome(quarter: number, startate: string, enddate: string) {
+  async createPDFHome(quarter: number, startate: Date, enddate: Date) {
     const pdfDoc = await PDFDocument.create();
 
     const imgBuffer = await fs.readFile("./assets/psg_logo.png");
@@ -62,7 +62,7 @@ export class PDFService {
     });
 
     //title
-    
+
     fontSize = 32;
     y = y - 50;
     const qtextWidth = font.widthOfTextAtSize(
@@ -81,11 +81,8 @@ export class PDFService {
     // Quartet
     fontSize = 16;
     y = y - 50;
-    const quarterLine = 'Quarter - '+ toRoman(quarter)
-    const qutextWidth = font.widthOfTextAtSize(
-      quarterLine,
-      fontSize
-    );
+    const quarterLine = "Quarter - " + toRoman(quarter);
+    const qutextWidth = font.widthOfTextAtSize(quarterLine, fontSize);
     page.drawText(quarterLine, {
       x: pageWidth / 2 - qutextWidth / 2,
       y,
@@ -97,11 +94,8 @@ export class PDFService {
     //date
     fontSize = 16;
     y = y - 50;
-    const dateline = formatDateString(startate,enddate)
-    const dtextWidth = font.widthOfTextAtSize(
-      dateline,
-      fontSize
-    );
+    const dateline = formatDateString(startate, enddate);
+    const dtextWidth = font.widthOfTextAtSize(dateline, fontSize);
     page.drawText(dateline, {
       x: pageWidth / 2 - dtextWidth / 2,
       y,
@@ -114,7 +108,26 @@ export class PDFService {
     return Buffer.from(pdfBytes);
   }
 
-  async createPDFIndex(sortedSubmissions: string[], startDate: string, endDate: string){
+  async createPDFIndex(
+    sortedSubmissions: ({
+      user: {
+        email: string;
+        password: string;
+        department: string;
+        role: string;
+        order: number;
+        resetToken: string | null;
+      };
+    } & {
+      uuid: string;
+      userEmail: string;
+      quarter: number;
+      year: number;
+      objectURL: string;
+      status: string;
+      modifiedAt: Date;
+    })[]
+  ) {
     const pdfDoc = await PDFDocument.create();
 
     const page = pdfDoc.addPage();
@@ -122,9 +135,9 @@ export class PDFService {
 
     const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
     const fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
-    
+
     let fontSize = 16;
-    let y = page.getHeight()
+    let y = page.getHeight();
     y = y - 50;
     const textWidth = font.widthOfTextAtSize(
       "PSG COLLEGE OF TECHNOLOGY - COIMBATORE - 4",
@@ -139,26 +152,20 @@ export class PDFService {
       color: rgb(0, 0, 0),
     });
 
-    fontSize = 14;
-    y = y - 25;
-    const dateline = formatDateString(startDate,endDate)
-    const dtextWidth = font.widthOfTextAtSize(
-      dateline,
-      fontSize
-    );
-    page.drawText(dateline, {
-      x: pageWidth / 2 - dtextWidth / 2,
-      y,
-      size: fontSize,
-      font: fontBold,
-      color: rgb(0, 0, 0),
-    });
+    // fontSize = 14;
+    // y = y - 25;
+    // const dateline = formatDateString(startDate, endDate);
+    // const dtextWidth = font.widthOfTextAtSize(dateline, fontSize);
+    // page.drawText(dateline, {
+    //   x: pageWidth / 2 - dtextWidth / 2,
+    //   y,
+    //   size: fontSize,
+    //   font: fontBold,
+    //   color: rgb(0, 0, 0),
+    // });
 
-    y = y-30
-    const htextWidth = font.widthOfTextAtSize(
-      "INDEX",
-      fontSize
-    );
+    y = y - 30;
+    const htextWidth = font.widthOfTextAtSize("INDEX", fontSize);
 
     page.drawText("INDEX", {
       x: pageWidth / 2 - htextWidth / 2,
@@ -168,12 +175,9 @@ export class PDFService {
       color: rgb(0, 0, 0),
     });
 
-    y = y-40
-    
-    const ltextWidth = font.widthOfTextAtSize(
-      "List of Reports",
-      fontSize
-    );
+    y = y - 40;
+
+    const ltextWidth = font.widthOfTextAtSize("List of Reports", fontSize);
 
     page.drawText("List of Reports", {
       x: pageWidth / 2 - ltextWidth / 2,
@@ -183,22 +187,18 @@ export class PDFService {
       color: rgb(0, 0, 0),
     });
 
-    let cou = 1
-    for (const submission of sortedSubmissions){
-      if (cou === 1){
-        y = y-50
+    let cou = 1;
+    for (const submission of sortedSubmissions) {
+      if (cou === 1) {
+        y = y - 50;
+      } else {
+        y = y - 25;
       }
-      else{
-        y=y-25
-      }
-      
-      fontSize = 12
-      const str = `${cou}. ${submission}`;
-      let itextWidth = font.widthOfTextAtSize(
-        str,
-        fontSize
-      );
-  
+
+      fontSize = 12;
+      const str = `${cou}. ${submission.user.department}`;
+      let itextWidth = font.widthOfTextAtSize(str, fontSize);
+
       page.drawText(str, {
         x: 50,
         y,
@@ -206,13 +206,14 @@ export class PDFService {
         font: font,
         color: rgb(0, 0, 0),
       });
-      cou = cou+1
+      cou = cou + 1;
     }
     const pdfBytes = await pdfDoc.save();
+    fs.writeFile("output1.pdf", pdfBytes);
     return Buffer.from(pdfBytes);
   }
 
-  async createPDFLeaf(name : string){
+  async createPDFLeaf(name: string) {
     const pdfDoc = await PDFDocument.create();
 
     const page = pdfDoc.addPage();
@@ -220,17 +221,14 @@ export class PDFService {
 
     const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
     const fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
-    
+
     let fontSize = 32;
-    let y = page.getHeight()
-    const textWidth = font.widthOfTextAtSize(
-      name,
-      fontSize
-    );
+    let y = page.getHeight();
+    const textWidth = font.widthOfTextAtSize(name, fontSize);
 
     page.drawText(name, {
       x: pageWidth / 2 - textWidth / 2,
-      y: y/2 - 32,
+      y: y / 2 - 32,
       size: fontSize,
       font: fontBold,
       color: rgb(0, 0, 0),

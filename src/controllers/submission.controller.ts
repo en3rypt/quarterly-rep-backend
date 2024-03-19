@@ -79,8 +79,13 @@ export class SubmissionController {
       );
       res.setHeader("Content-Type", "application/octet-stream");
       res.status(200).send(pdfBuffer);
-    } catch (error) {
-      res.status(500).json({ error: "Unknown Error Occured" });
+    } catch (error: any) {
+      res.status(500).json({
+        staus: "error",
+        message: error.message
+          ? error.message
+          : "Error in downloading submissions",
+      });
     }
   }
   async updateSubmission(req: Request, res: Response) {

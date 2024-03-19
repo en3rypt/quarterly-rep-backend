@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from "uuid";
 import { PDFService } from "./pdf.service";
 import { promises as fs } from "fs";
 import { QuarterServices } from "./quarters.service";
+import { pseudoRandomBytes } from "crypto";
 
 export class SubmissionService {
   private readonly minioService;
@@ -100,11 +101,13 @@ export class SubmissionService {
       quarter,
       year
     );
+    if (!quarterInfo) {
+      throw new Error("Invalid quarter or year");
+    }
 
     const sortedSubmissions = submissions
       .filter((submission) => submission.user.role === "Representative")
       .sort((a, b) => a.user.order - b.user.order);
-
     const hasPendingStatus = sortedSubmissions.some(
       (item) => item.status === "PENDING"
     );
@@ -114,11 +117,26 @@ export class SubmissionService {
         "All submissions must be submitted before downloading consolidated PDF"
       );
     }
-    const pdfBuffers = await Promise.all(
-      sortedSubmissions.map((submission) =>
-        this.minioService.getFile(submission.objectURL.split("/").pop() ?? "")
-      )
+    const homeBuffer = await this.pdfService.createPDFHome(
+      quarter,
+      quarterInfo.startDate,
+      quarterInfo.endDate
     );
+    const indexBuffer = await this.pdfService.createPDFIndex(sortedSubmissions);
+
+    const pdfBuffers = [];
+    pdfBuffers.push(homeBuffer, indexBuffer);
+
+    for (const submission of sortedSubmissions) {
+      const leafBuffer = await this.pdfService.createPDFLeaf(
+        submission.user.department
+      );
+      const fileBuffer = await this.minioService.getFile(
+        submission.objectURL.split("/").pop() ?? ""
+      );
+
+      pdfBuffers.push(leafBuffer, fileBuffer);
+    }
 
     const outputFilePath = `uploads/Report_${year}_Quarter${quarter}_consolidated.pdf`;
     const pdfBuffer = await this.pdfService.mergeMinioPDFs(pdfBuffers);
