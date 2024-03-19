@@ -8,9 +8,9 @@ import { authorize } from "../middleware/roleAuth.middleware";
 import { Role } from "../enums/role.enum";
 const router = Router();
 
-router.use("/auth", authRouter);
-router.use("/user", jwtAuthMiddleware, userRouter);
-router.use("/quarter", jwtAuthMiddleware, quarterRouter);
-router.use("/submission", jwtAuthMiddleware, submissionRouter);
+router.use("/api/auth", authRouter);
+router.use("/api/user", jwtAuthMiddleware, userRouter);
+router.use("/api/quarter", jwtAuthMiddleware, quarterRouter);
+router.use("/api/submission", jwtAuthMiddleware, submissionRouter);
 
 export default router;
