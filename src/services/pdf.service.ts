@@ -206,7 +206,6 @@ export class PDFService {
       cou = cou + 1;
     }
     const pdfBytes = await pdfDoc.save();
-    fs.writeFile("output1.pdf", pdfBytes);
     return Buffer.from(pdfBytes);
   }
 
