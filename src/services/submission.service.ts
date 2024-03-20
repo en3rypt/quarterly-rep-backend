@@ -120,7 +120,8 @@ export class SubmissionService {
     const homeBuffer = await this.pdfService.createPDFHome(
       quarter,
       quarterInfo.startDate,
-      quarterInfo.endDate
+      quarterInfo.endDate,
+      year
     );
     const indexBuffer = await this.pdfService.createPDFIndex(sortedSubmissions);
 

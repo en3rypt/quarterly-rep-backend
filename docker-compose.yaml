@@ -1,4 +1,33 @@
 services:
+  db:
+    image: "postgres:15"
+    container_name: db
+    restart: always
+    ports:
+      - ${POSTGRES_PORT}:${POSTGRES_PORT}
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    expose:
+      - ${POSTGRES_PORT}
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
+
+  minio:
+    image: "minio/minio:RELEASE.2024-02-17T01-15-57Z"
+    container_name: minio
+    restart: always
+    command: server --console-address ":9090" /data
+    ports:
+      - "9000:9000"
+      - "9090:9090"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_SECRET_PASSWORD}
+    volumes:
+      - ./minio-data:/data
+
   app:
     build:
       context: ./
@@ -8,7 +37,7 @@ services:
       - .:/app
       - /app/node_modules
     ports:
-      - 3000:3000
+      - ${PORT}:${PORT}
     working_dir: /app
     depends_on:
       - db
@@ -16,4 +45,58 @@ services:
     env_file:
       - .env
     expose:
-      - 3000
+      - ${PORT}
+
+  mq:
+    hostname: "mailmq"
+    image: rabbitmq:management
+    container_name: mail-rabbitmq
+    volumes:
+      - "db:/var/lib/rabbitmq/mnesia/"
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 5s
+      timeout: 20s
+      retries: 5
+
+  pub:
+    image: psgecampus/mail-publisher
+    restart: on-failure
+    environment:
+      - PORT=8080
+      - CLIENT_ID=675518225398-sdu9glg7i88e0r7tq4f4cdmvj9v7et99.apps.googleusercontent.com
+      - CLIENT_SECRET=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
+      - REFRESH_TOKEN=1//04Icjw1VE-6O9CgYIARAAGAQSNwF-L9Irlj12b__QjGGD_3eE2A0NrN4CubE84yxHKwin6P1AgnfAGMmM7rOE3X2e3Dy9AdJpNwg
+      - FROM_EMAIL=ecampus@psgtech.ac.in
+      - TZ=Asia/Kolkata
+      - AMQP_HOST=amqp://mq
+      - AMQP_QUEUE=mails
+    ports:
+      - "9999:8080"
+    depends_on:
+      mq:
+        condition: service_healthy
+    container_name: mail-publisher
+
+  sub:
+    image: psgecampus/mail-subscriber
+    restart: on-failure
+    environment:
+      - PORT=8080
+      - CLIENT_ID=675518225398-sdu9glg7i88e0r7tq4f4cdmvj9v7et99.apps.googleusercontent.com
+      - CLIENT_SECRET=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
+      - REFRESH_TOKEN=1//04Icjw1VE-6O9CgYIARAAGAQSNwF-L9Irlj12b__QjGGD_3eE2A0NrN4CubE84yxHKwin6P1AgnfAGMmM7rOE3X2e3Dy9AdJpNwg
+      - FROM_EMAIL=ecampus@psgtech.ac.in
+      - TZ=Asia/Kolkata
+      - AMQP_HOST=amqp://mq
+      - AMQP_QUEUE=mails
+    depends_on:
+      mq:
+        condition: service_healthy
+    container_name: mail-subscriber
+volumes:
+  db:
+    driver: local

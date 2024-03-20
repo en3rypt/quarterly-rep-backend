@@ -27,7 +27,12 @@ export class PDFService {
     await fs.writeFile(outputFilePath, mergedPdfBytes);
   }
 
-  async createPDFHome(quarter: number, startate: Date, enddate: Date) {
+  async createPDFHome(
+    quarter: number,
+    startate: Date,
+    enddate: Date,
+    year: number
+  ) {
     const pdfDoc = await PDFDocument.create();
 
     const imgBuffer = await fs.readFile("./assets/psg_logo.png");
@@ -91,7 +96,14 @@ export class PDFService {
     //date
     fontSize = 16;
     y = y - 50;
-    const dateline = formatDateString(startate, enddate);
+    let quarterMapping: { [key: number]: string } = {
+      1: "January - March",
+      2: "April - June",
+      3: "July - September",
+      4: "October - December",
+    };
+
+    const dateline = `${quarterMapping[quarter]} ${year}`;
     const dtextWidth = font.widthOfTextAtSize(dateline, fontSize);
     page.drawText(dateline, {
       x: pageWidth / 2 - dtextWidth / 2,
