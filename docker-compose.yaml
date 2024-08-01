@@ -67,9 +67,9 @@ services:
     restart: on-failure
     environment:
       - PORT=8080
-      - CLIENT_ID=675518225398-sdu9glg7i88e0r7tq4f4cdmvj9v7et99.apps.googleusercontent.com
-      - CLIENT_SECRET=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
-      - REFRESH_TOKEN=1//04Icjw1VE-6O9CgYIARAAGAQSNwF-L9Irlj12b__QjGGD_3eE2A0NrN4CubE84yxHKwin6P1AgnfAGMmM7rOE3X2e3Dy9AdJpNwg
+      - CLIENT_ID={CLIENT_ID}
+      - CLIENT_SECRET={CLIENT_SECRET}
+      - REFRESH_TOKEN={REFRESH_TOKEN}
       - FROM_EMAIL=ecampus@psgtech.ac.in
       - TZ=Asia/Kolkata
       - AMQP_HOST=amqp://mq
@@ -86,9 +86,9 @@ services:
     restart: on-failure
     environment:
       - PORT=8080
-      - CLIENT_ID=675518225398-sdu9glg7i88e0r7tq4f4cdmvj9v7et99.apps.googleusercontent.com
-      - CLIENT_SECRET=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
-      - REFRESH_TOKEN=1//04Icjw1VE-6O9CgYIARAAGAQSNwF-L9Irlj12b__QjGGD_3eE2A0NrN4CubE84yxHKwin6P1AgnfAGMmM7rOE3X2e3Dy9AdJpNwg
+      - CLIENT_ID={CLIENT_ID}
+      - CLIENT_SECRET={CLIENT_SECRET}
+      - REFRESH_TOKEN={REFRESH_TOKEN}
       - FROM_EMAIL=ecampus@psgtech.ac.in
       - TZ=Asia/Kolkata
       - AMQP_HOST=amqp://mq
